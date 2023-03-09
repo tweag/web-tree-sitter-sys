@@ -75,16 +75,14 @@ impl TreeSitter {
 
         let scope = &web_sys::window().unwrap_throw();
 
-        let tree_sitter = Reflect::get(&scope, &"TreeSitter".into())
-            .and_then(|property| {
-                if property.is_undefined() {
-                    let message = "window.TreeSitter is not defined; load the tree-sitter javascript module first";
-                    Err(JsError::new(message).into())
-                } else {
-                    Ok(property)
-                }
-            })
-            .lift_error()?;
+        let tree_sitter = Reflect::get(&scope, &"TreeSitter".into()).and_then(|property| {
+            if property.is_undefined() {
+                let message = "window.TreeSitter is not defined; load the tree-sitter javascript module first";
+                Err(JsError::new(message).into())
+            } else {
+                Ok(property)
+            }
+        })?;
 
         // Call `init` from `web-tree-sitter` to initialize emscripten
         let init = Reflect::get(&tree_sitter, &"init".into())
@@ -346,7 +344,8 @@ impl Default for Point {
     }
 }
 
-impl Eq for Point {}
+impl Eq for Point {
+}
 
 impl std::hash::Hash for Point {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
@@ -469,6 +468,15 @@ extern {
         end_position: Option<&Point>,
     ) -> Box<[JsValue]>;
 
+    // -> QueryCapture[]
+    #[wasm_bindgen(method)]
+    pub fn captures(
+        this: &Query,
+        node: &SyntaxNode,
+        start_position: Option<&Point>,
+        end_position: Option<&Point>,
+    ) -> Box<[JsValue]>;
+
     // -> PredicateResult[]
     #[wasm_bindgen(method, js_name = predicatesForPattern)]
     pub fn predicates_for_pattern(this: &Query, pattern_index: u32) -> Box<[JsValue]>;
@@ -483,13 +491,10 @@ extern {
     // Instance Properties
 
     #[wasm_bindgen(method, getter)]
-    pub fn node(this: &QueryCapture) -> SyntaxNode;
-
-    #[wasm_bindgen(method, getter)]
     pub fn name(this: &QueryCapture) -> JsString;
 
     #[wasm_bindgen(method, getter)]
-    pub fn text(this: &QueryCapture) -> Option<JsString>;
+    pub fn node(this: &QueryCapture) -> SyntaxNode;
 }
 
 impl QueryCapture {
@@ -500,37 +505,6 @@ impl QueryCapture {
         JsCast::unchecked_into(obj)
     }
 }
-
-// #[wasm_bindgen]
-// extern {
-//     #[derive(Clone, Debug, Eq, PartialEq)]
-//     #[wasm_bindgen(extends = Object)]
-//     pub type QueryCursor;
-
-//     // Instance Properties
-
-//     #[wasm_bindgen(method, getter)]
-//     pub fn name(this: &QueryCursor) -> JsString;
-
-//     #[wasm_bindgen(method, getter)]
-//     pub fn node(this: &QueryCursor) -> SyntaxNode;
-
-//     #[wasm_bindgen(method)]
-//     pub fn matches(this: &QueryCursor, query: &Query, node: SyntaxNode, source: &[u8]) -> Vec<QueryMatch>;
-// }
-
-// impl QueryCursor {
-//     pub fn new() -> Self {
-//         let obj = Object::new();
-//         JsCast::unchecked_into(obj)
-//     }
-// }
-
-// impl Default for QueryCursor {
-//     fn default() -> Self {
-//         Self::new()
-//     }
-// }
 
 #[wasm_bindgen]
 extern {
@@ -575,17 +549,9 @@ extern {
     #[wasm_bindgen(method, getter)]
     pub fn operator(this: &QueryPredicate) -> JsString;
 
-    // -> JsString[]
+    // -> QueryPredicateArg[]
     #[wasm_bindgen(method, getter)]
     pub fn operands(this: &QueryPredicate) -> Box<[JsValue]>;
-}
-
-impl QueryPredicate {
-    pub fn new(operator: &JsString) -> Self {
-        let obj = Object::new();
-        Reflect::set(&obj, &"operator".into(), &operator.into()).unwrap();
-        JsCast::unchecked_into(obj)
-    }
 }
 
 #[wasm_bindgen]
@@ -652,7 +618,8 @@ impl Default for Range {
     }
 }
 
-impl Eq for Range {}
+impl Eq for Range {
+}
 
 impl std::hash::Hash for Range {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
@@ -849,7 +816,8 @@ impl PartialEq<SyntaxNode> for SyntaxNode {
     }
 }
 
-impl Eq for SyntaxNode {}
+impl Eq for SyntaxNode {
+}
 
 impl std::hash::Hash for SyntaxNode {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
