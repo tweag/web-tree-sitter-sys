@@ -548,7 +548,7 @@ extern {
     // Instance Properties
 
     #[wasm_bindgen(method, getter)]
-    pub fn pattern(this: &QueryMatch) -> usize;
+    pub fn pattern(this: &QueryMatch) -> u32;
 
     // -> QueryCapture[]
     #[wasm_bindgen(method, getter)]
@@ -562,6 +562,42 @@ impl QueryMatch {
         Reflect::set(&obj, &"captures".into(), &captures.into()).unwrap();
         JsCast::unchecked_into(obj)
     }
+}
+
+#[wasm_bindgen]
+extern {
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    #[wasm_bindgen(extends = Object)]
+    pub type QueryPredicate;
+
+    // Instance Properties
+
+    #[wasm_bindgen(method, getter)]
+    pub fn operator(this: &QueryPredicate) -> JsString;
+
+    // -> JsString[]
+    #[wasm_bindgen(method, getter)]
+    pub fn operands(this: &QueryPredicate) -> Box<[JsValue]>;
+}
+
+impl QueryPredicate {
+    pub fn new(operator: &JsString) -> Self {
+        let obj = Object::new();
+        Reflect::set(&obj, &"operator".into(), &operator.into()).unwrap();
+        JsCast::unchecked_into(obj)
+    }
+}
+
+#[wasm_bindgen]
+extern {
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    #[wasm_bindgen(extends = Object)]
+    pub type QueryPredicateArg;
+
+    // Instance Properties
+
+    #[wasm_bindgen(method, getter)]
+    pub fn value(this: &QueryPredicateArg) -> JsString;
 }
 
 #[wasm_bindgen]
