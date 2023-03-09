@@ -540,6 +540,34 @@ impl QueryMatch {
 
 #[wasm_bindgen]
 extern {
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    #[wasm_bindgen(extends = Object)]
+    pub type QueryPredicate;
+
+    // Instance Properties
+
+    #[wasm_bindgen(method, getter)]
+    pub fn operator(this: &QueryPredicate) -> JsString;
+
+    // -> QueryPredicateArg[]
+    #[wasm_bindgen(method, getter)]
+    pub fn operands(this: &QueryPredicate) -> Box<[JsValue]>;
+}
+
+#[wasm_bindgen]
+extern {
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    #[wasm_bindgen(extends = Object)]
+    pub type QueryPredicateArg;
+
+    // Instance Properties
+
+    #[wasm_bindgen(method, getter)]
+    pub fn value(this: &QueryPredicateArg) -> JsString;
+}
+
+#[wasm_bindgen]
+extern {
     #[derive(Clone, Debug)]
     #[wasm_bindgen(extends = Object)]
     pub type Range;
