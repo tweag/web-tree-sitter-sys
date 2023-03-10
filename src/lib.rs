@@ -82,7 +82,8 @@ impl TreeSitter {
             } else {
                 Ok(property)
             }
-        })?;
+        })
+        .lift_error()?;
 
         // Call `init` from `web-tree-sitter` to initialize emscripten
         let init = Reflect::get(&tree_sitter, &"init".into())
